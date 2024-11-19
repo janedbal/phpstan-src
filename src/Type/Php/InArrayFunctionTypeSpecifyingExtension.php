@@ -110,7 +110,7 @@ final class InArrayFunctionTypeSpecifyingExtension implements FunctionTypeSpecif
 			$context->true()
 			|| (
 				$context->false()
-				&& count($arrayValueType->getFiniteTypes()) === 1
+				&& count($arrayValueType->getFiniteTypes()) > 0
 			)
 		) {
 			$specifiedTypes = $this->typeSpecifier->create(

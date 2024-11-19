@@ -1480,6 +1480,12 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 		$this->assertNoErrors($errors);
 	}
 
+	public function testBug12083InArrayEnum(): void
+	{
+		$errors = $this->runAnalyse(__DIR__ . '/data/enum-in-array.php');
+		$this->assertNoErrors($errors);
+	}
+
 	/**
 	 * @param string[]|null $allAnalysedFiles
 	 * @return Error[]
