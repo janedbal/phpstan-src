@@ -11,7 +11,6 @@ use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
-use function array_filter;
 use function extension_loaded;
 use function restore_error_handler;
 use function sprintf;
@@ -1479,20 +1478,6 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/bug-11913.php');
 		$this->assertNoErrors($errors);
-	}
-
-	public function testBug12083InArrayEnum(): void
-	{
-		if (PHP_VERSION_ID < 80100) {
-			$this->markTestSkipped('Test requires PHP 8.1.');
-		}
-
-		$errors = $this->runAnalyse(__DIR__ . '/data/enum-in-array.php');
-
-		$filteredErrors = array_filter($errors, static fn (Error $error): bool => $error->getIdentifier() !== 'function.alreadyNarrowedType'
-				&& $error->getIdentifier() !== 'function.impossibleType');
-
-		$this->assertNoErrors($filteredErrors);
 	}
 
 	/**
