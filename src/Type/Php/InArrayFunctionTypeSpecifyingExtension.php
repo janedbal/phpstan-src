@@ -15,9 +15,14 @@ use PHPStan\Node\Expr\AlwaysRememberedExpr;
 use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\ArrayType;
+use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\FunctionTypeSpecifyingExtension;
+use PHPStan\Type\IntersectionType;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\TypeTraverser;
+use PHPStan\Type\UnionType;
 use function count;
 use function strtolower;
 
@@ -111,6 +116,7 @@ final class InArrayFunctionTypeSpecifyingExtension implements FunctionTypeSpecif
 			|| (
 				$context->false()
 				&& count($arrayValueType->getFiniteTypes()) > 0
+				&& $this->isEnumCasesArray($arrayValueType) // avoid eliminating all enum cases in edge case like in_array(Enum, list<Enum>, true)
 			)
 		) {
 			$specifiedTypes = $this->typeSpecifier->create(
@@ -160,6 +166,25 @@ final class InArrayFunctionTypeSpecifyingExtension implements FunctionTypeSpecif
 		}
 
 		return $specifiedTypes;
+	}
+
+	private function isEnumCasesArray(Type $type): bool
+	{
+		$containsOnlyEnumCases = true;
+
+		TypeTraverser::map($type, static function (Type $type, callable $traverse) use (&$containsOnlyEnumCases): Type {
+			if ($type instanceof UnionType || $type instanceof IntersectionType) {
+				return $traverse($type);
+			}
+
+			if (!$type instanceof EnumCaseObjectType) {
+				$containsOnlyEnumCases = false;
+			}
+
+			return $type;
+		});
+
+		return $containsOnlyEnumCases;
 	}
 
 }
