@@ -97,7 +97,7 @@ enum MyEnum: string
 	{
 		if (!in_array($enum, $array, true)) {
 			assertType('MyEnum', $enum);
-			assertType('array<null>', $array);
+			assertType('array<MyEnum|null>', $array);
 		} else {
 			assertType('MyEnum', $enum);
 			assertType('non-empty-array<MyEnum|null>', $array);
@@ -117,7 +117,7 @@ class InArrayEnum
 		}
 
 		assertType(MyEnum::class, $enum);
-		assertType('list<*NEVER*>&list<MyEnum>', $list);
+		assertType('list<MyEnum>', $list);
 	}
 
 	/** @param list<MyEnum> $list */

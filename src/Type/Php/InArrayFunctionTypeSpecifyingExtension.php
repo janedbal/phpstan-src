@@ -111,7 +111,8 @@ final class InArrayFunctionTypeSpecifyingExtension implements FunctionTypeSpecif
 			|| (
 				$context->false()
 				&& count($arrayValueType->getFiniteTypes()) > 0
-				&& TypeCombinator::union(...$arrayValueType->getFiniteTypes())->equals($arrayValueType) // avoid edge-case of in_array(Enum, list<Enum>, true)
+				&& count($needleType->getFiniteTypes()) > 0
+				&& $arrayType->isIterableAtLeastOnce()->yes()
 			)
 		) {
 			$specifiedTypes = $this->typeSpecifier->create(
@@ -134,7 +135,7 @@ final class InArrayFunctionTypeSpecifyingExtension implements FunctionTypeSpecif
 			$context->true()
 			|| (
 				$context->false()
-				&& count($needleType->getFiniteTypes()) > 0
+				&& count($needleType->getFiniteTypes()) === 1
 			)
 		) {
 			if ($context->true()) {
