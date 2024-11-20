@@ -96,8 +96,10 @@ enum MyEnum: string
 	public function testNegative4(MyEnum $enum, array $array): void
 	{
 		if (!in_array($enum, $array, true)) {
+			assertType('MyEnum', $enum);
 			assertType('array<null>', $array);
 		} else {
+			assertType('MyEnum', $enum);
 			assertType('non-empty-array<MyEnum|null>', $array);
 		}
 	}
@@ -107,25 +109,26 @@ enum MyEnum: string
 class InArrayEnum
 {
 
-	/** @var list<MyEnum> */
-	private array $list = [];
-
-	public function testPositive(MyEnum $enum): void
+	/** @param list<MyEnum> $list */
+	public function testPositive(MyEnum $enum, array $list): void
 	{
-		if (in_array($enum, $this->list, true)) {
+		if (in_array($enum, $list, true)) {
 			return;
 		}
 
 		assertType(MyEnum::class, $enum);
+		assertType('list<*NEVER*>&list<MyEnum>', $list);
 	}
 
-	public function testNegative(MyEnum $enum): void
+	/** @param list<MyEnum> $list */
+	public function testNegative(MyEnum $enum, array $list): void
 	{
-		if (!in_array($enum, $this->list, true)) {
+		if (!in_array($enum, $list, true)) {
 			return;
 		}
 
 		assertType(MyEnum::class, $enum);
+		assertType('non-empty-list<MyEnum>', $list);
 	}
 
 }
