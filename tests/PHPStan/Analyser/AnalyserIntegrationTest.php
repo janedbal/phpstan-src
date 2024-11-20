@@ -1483,6 +1483,10 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 
 	public function testBug12083InArrayEnum(): void
 	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
 		$errors = $this->runAnalyse(__DIR__ . '/data/enum-in-array.php');
 
 		$filteredErrors = array_filter($errors, static fn (Error $error): bool => $error->getIdentifier() !== 'function.alreadyNarrowedType'
