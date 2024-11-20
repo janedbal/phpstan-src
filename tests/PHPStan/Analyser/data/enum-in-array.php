@@ -58,6 +58,37 @@ enum MyEnum: string
 		}
 	}
 
+	public function testNegative1(): void
+	{
+		foreach (self::cases() as $enum) {
+			if (!in_array($enum, MyEnum::SET_AB, true)) {
+				assertType('MyEnum::C', $enum);
+			} else {
+				assertType('MyEnum::A|MyEnum::B', $enum);
+			}
+		}
+	}
+
+	public function testNegative2(): void
+	{
+		foreach (self::cases() as $enum) {
+			if (!in_array($enum, MyEnum::SET_AB, true)) {
+				assertType('MyEnum::C', $enum);
+			} elseif (!in_array($enum, MyEnum::SET_AB, true)) {
+				assertType('*NEVER*', $enum);
+			}
+		}
+	}
+
+	public function testNegative3(): void
+	{
+		foreach ([MyEnum::C] as $enum) {
+			if (!in_array($enum, MyEnum::SET_C, true)) {
+				assertType('*NEVER*', $enum);
+			}
+		}
+	}
+
 }
 
 class InArrayEnum
@@ -66,9 +97,18 @@ class InArrayEnum
 	/** @var list<MyEnum> */
 	private array $list = [];
 
-	public function doFoo(MyEnum $enum): void
+	public function testPositive(MyEnum $enum): void
 	{
 		if (in_array($enum, $this->list, true)) {
+			return;
+		}
+
+		assertType(MyEnum::class, $enum);
+	}
+
+	public function testNegative(MyEnum $enum): void
+	{
+		if (!in_array($enum, $this->list, true)) {
 			return;
 		}
 

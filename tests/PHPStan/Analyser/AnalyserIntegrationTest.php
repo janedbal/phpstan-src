@@ -11,6 +11,7 @@ use PHPStan\Reflection\SignatureMap\SignatureMapProvider;
 use PHPStan\Testing\PHPStanTestCase;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Constant\ConstantStringType;
+use function array_filter;
 use function extension_loaded;
 use function restore_error_handler;
 use function sprintf;
@@ -1484,12 +1485,10 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/enum-in-array.php');
 
-		$this->assertCount(2, $errors);
+		$filteredErrors = array_filter($errors, static fn (Error $error): bool => $error->getIdentifier() !== 'function.alreadyNarrowedType'
+				&& $error->getIdentifier() !== 'function.impossibleType');
 
-		$this->assertSame('Call to function in_array() with arguments \'c\', array{\'c\'} and true will always evaluate to true.', $errors[0]->getMessage());
-		$this->assertSame(92, $errors[0]->getLine());
-		$this->assertSame('Call to function in_array() with arguments \'c\', array{\'c\'} and true will always evaluate to true.', $errors[1]->getMessage());
-		$this->assertSame(124, $errors[1]->getLine());
+		$this->assertNoErrors($filteredErrors);
 	}
 
 	/**
