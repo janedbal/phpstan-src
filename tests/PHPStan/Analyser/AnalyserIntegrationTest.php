@@ -1483,7 +1483,13 @@ class AnalyserIntegrationTest extends PHPStanTestCase
 	public function testBug12083InArrayEnum(): void
 	{
 		$errors = $this->runAnalyse(__DIR__ . '/data/enum-in-array.php');
-		$this->assertNoErrors($errors);
+
+		$this->assertCount(2, $errors);
+
+		$this->assertSame('Call to function in_array() with arguments \'c\', array{\'c\'} and true will always evaluate to true.', $errors[0]->getMessage());
+		$this->assertSame(92, $errors[0]->getLine());
+		$this->assertSame('Call to function in_array() with arguments \'c\', array{\'c\'} and true will always evaluate to true.', $errors[1]->getMessage());
+		$this->assertSame(124, $errors[1]->getLine());
 	}
 
 	/**

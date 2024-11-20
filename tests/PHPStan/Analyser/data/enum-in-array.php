@@ -15,7 +15,7 @@ enum MyEnum: string
 
 	public function test1(): void
 	{
-		foreach (MyEnum::cases() as $enum) {
+		foreach (self::cases() as $enum) {
 			if (in_array($enum, MyEnum::SET_AB, true)) {
 				assertType('MyEnum::A|MyEnum::B', $enum);
 			} elseif (in_array($enum, MyEnum::SET_C, true)) {
@@ -28,7 +28,7 @@ enum MyEnum: string
 
 	public function test2(): void
 	{
-		foreach (MyEnum::cases() as $enum) {
+		foreach (self::cases() as $enum) {
 			if (in_array($enum, MyEnum::SET_ABC, true)) {
 				assertType('MyEnum::A|MyEnum::B|MyEnum::C', $enum);
 			} else {
@@ -39,7 +39,7 @@ enum MyEnum: string
 
 	public function test3(): void
 	{
-		foreach (MyEnum::cases() as $enum) {
+		foreach (self::cases() as $enum) {
 			if (in_array($enum, MyEnum::SET_C, true)) {
 				assertType('MyEnum::C', $enum);
 			} else {
@@ -75,4 +75,57 @@ class InArrayEnum
 		assertType(MyEnum::class, $enum);
 	}
 
+}
+
+
+class InArrayOtherFiniteType {
+
+	const SET_AB = ['a', 'b'];
+	const SET_C = ['c'];
+	const SET_ABC = ['a', 'b', 'c'];
+
+	public function test1(): void
+	{
+		foreach (['a', 'b', 'c'] as $item) {
+			if (in_array($item, self::SET_AB, true)) {
+				assertType("'a'|'b'", $item);
+			} elseif (in_array($item, self::SET_C, true)) {
+				assertType("'c'", $item);
+			} else {
+				assertType('*NEVER*', $item);
+			}
+		}
+	}
+
+	public function test2(): void
+	{
+		foreach (['a', 'b', 'c'] as $item) {
+			if (in_array($item, self::SET_ABC, true)) {
+				assertType("'a'|'b'|'c'", $item);
+			} else {
+				assertType('*NEVER*', $item);
+			}
+		}
+	}
+
+	public function test3(): void
+	{
+		foreach (['a', 'b', 'c'] as $item) {
+			if (in_array($item, self::SET_C, true)) {
+				assertType("'c'", $item);
+			} else {
+				assertType("'a'|'b'", $item);
+			}
+		}
+	}
+	public function test4(): void
+	{
+		foreach (['c'] as $item) {
+			if (in_array($item, self::SET_C, true)) {
+				assertType("'c'", $item);
+			} else {
+				assertType('*NEVER*', $item);
+			}
+		}
+	}
 }
