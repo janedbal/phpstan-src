@@ -47,6 +47,7 @@ enum MyEnum: string
 			}
 		}
 	}
+
 	public function test4(): void
 	{
 		foreach ([MyEnum::C] as $enum) {
@@ -86,6 +87,18 @@ enum MyEnum: string
 			if (!in_array($enum, MyEnum::SET_C, true)) {
 				assertType('*NEVER*', $enum);
 			}
+		}
+	}
+
+	/**
+	 * @param array<MyEnum|null> $array
+	 */
+	public function testNegative4(MyEnum $enum, array $array): void
+	{
+		if (!in_array($enum, $array, true)) {
+			assertType('array<null>', $array);
+		} else {
+			assertType('non-empty-array<MyEnum|null>', $array);
 		}
 	}
 

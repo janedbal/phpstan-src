@@ -134,7 +134,7 @@ final class InArrayFunctionTypeSpecifyingExtension implements FunctionTypeSpecif
 			$context->true()
 			|| (
 				$context->false()
-				&& count($needleType->getFiniteTypes()) === 1
+				&& count($needleType->getFiniteTypes()) > 0
 			)
 		) {
 			if ($context->true()) {
