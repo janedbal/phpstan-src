@@ -324,5 +324,5 @@ function get_defined_constants(bool $categorize = false): array {}
  * @param-out int $rest_index
  * @return __benevolent<array<string,string>|array<string,false>|array<string,list<mixed>>|false>
  */
-function getopt(string $short_options, array $long_options = [], int &$rest_index = null): array|false {}
+function getopt(string $short_options, array $long_options = [], &$rest_index = null) {}
 
