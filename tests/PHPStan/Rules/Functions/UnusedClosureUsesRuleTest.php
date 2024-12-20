@@ -22,11 +22,11 @@ class UnusedClosureUsesRuleTest extends RuleTestCase
 		$this->analyse([__DIR__ . '/data/unused-closure-uses.php'], [
 			[
 				'Anonymous function has an unused use $unused.',
-				3,
+				6,
 			],
 			[
 				'Anonymous function has an unused use $anotherUnused.',
-				3,
+				7,
 			],
 			[
 				'Anonymous function has an unused use $usedInClosureUse.',
