@@ -1043,6 +1043,8 @@ services:
 
 	-
 		class: PHPStan\Rules\UnusedFunctionParametersCheck
+		arguments:
+			reportExactLine: %featureToggles.bleedingEdge%
 
 	-
 		class: PHPStan\Rules\TooWideTypehints\TooWideParameterOutTypeCheck

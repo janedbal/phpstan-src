@@ -18,7 +18,10 @@ use function sprintf;
 final class UnusedFunctionParametersCheck
 {
 
-	public function __construct(private ReflectionProvider $reflectionProvider)
+	public function __construct(
+		private ReflectionProvider $reflectionProvider,
+		private bool $reportExactLine,
+	)
 	{
 	}
 
@@ -52,9 +55,11 @@ final class UnusedFunctionParametersCheck
 		}
 		$errors = [];
 		foreach ($unusedParameters as $name => $variable) {
-			$errors[] = RuleErrorBuilder::message(
-				sprintf($unusedParameterMessage, $name),
-			)->identifier($identifier)->line($variable->getStartLine())->build();
+			$errorBuilder = RuleErrorBuilder::message(sprintf($unusedParameterMessage, $name))->identifier($identifier);
+			if ($this->reportExactLine) {
+				$errorBuilder->line($variable->getStartLine());
+			}
+			$errors[] = $errorBuilder->build();
 		}
 
 		return $errors;

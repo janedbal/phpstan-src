@@ -12,11 +12,29 @@ use PHPStan\Testing\RuleTestCase;
 class UnusedConstructorParametersRuleTest extends RuleTestCase
 {
 
+	private bool $reportExactLine = true;
+
 	protected function getRule(): Rule
 	{
 		return new UnusedConstructorParametersRule(new UnusedFunctionParametersCheck(
 			$this->createReflectionProvider(),
+			$this->reportExactLine,
 		));
+	}
+
+	public function testUnusedConstructorParametersNoExactLine(): void
+	{
+		$this->reportExactLine = false;
+		$this->analyse([__DIR__ . '/data/unused-constructor-parameters.php'], [
+			[
+				'Constructor of class UnusedConstructorParameters\Foo has an unused parameter $unusedParameter.',
+				11,
+			],
+			[
+				'Constructor of class UnusedConstructorParameters\Foo has an unused parameter $anotherUnusedParameter.',
+				11,
+			],
+		]);
 	}
 
 	public function testUnusedConstructorParameters(): void
