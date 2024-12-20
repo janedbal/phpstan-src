@@ -25,6 +25,7 @@ parameters:
 		checkParameterCastableToNumberFunctions: false
 		skipCheckGenericClasses: []
 		stricterFunctionMap: false
+		reportPreciseLineForUnusedFunctionParameter: false
 	fileExtensions:
 		- php
 	checkAdvancedIsset: false
@@ -1044,7 +1045,7 @@ services:
 	-
 		class: PHPStan\Rules\UnusedFunctionParametersCheck
 		arguments:
-			reportExactLine: %featureToggles.bleedingEdge%
+			reportExactLine: %featureToggles.reportPreciseLineForUnusedFunctionParameter%
 
 	-
 		class: PHPStan\Rules\TooWideTypehints\TooWideParameterOutTypeCheck
