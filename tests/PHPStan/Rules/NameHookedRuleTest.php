@@ -30,9 +30,11 @@ class NameHookedRuleTest extends RuleTestCase
 			 */
 			public function processNode(Node $node, Scope $scope): array
 			{
-				return RuleErrorBuilder::message('Found a name: ' . $node->toString())
+				$error = RuleErrorBuilder::message('Found a name: ' . $node->toString())
 					->identifier('test.name.hooked')
 					->build();
+
+				return [$error];
 			}
 
 		};
