@@ -393,4 +393,53 @@ class CommandHelperTest extends TestCase
 		$this->assertContains($relativePaths . 'root.neon', $parameters['additionalConfigFiles']);
 	}
 
+	/**
+	 * @throws InceptionNotSuccessfulException
+	 */
+	public function testErrorFormatFromCli(): void
+	{
+		$result = CommandHelper::begin(
+			new StringInput(''),
+			new NullOutput(),
+			[__DIR__],
+			null,
+			null,
+			[],
+			null,
+			null,
+			'0',
+			false,
+			false,
+			null,
+			null,
+			false,
+			errorFormat: 'json',
+		);
+		$this->assertSame('json', $result->getContainer()->getParameter('errorFormat'));
+	}
+
+	/**
+	 * @throws InceptionNotSuccessfulException
+	 */
+	public function testErrorFormatDefault(): void
+	{
+		$result = CommandHelper::begin(
+			new StringInput(''),
+			new NullOutput(),
+			[__DIR__],
+			null,
+			null,
+			[],
+			null,
+			null,
+			'0',
+			false,
+			false,
+			null,
+			null,
+			false,
+		);
+		$this->assertNull($result->getContainer()->getParameter('errorFormat'));
+	}
+
 }
