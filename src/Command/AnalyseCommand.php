@@ -171,6 +171,7 @@ final class AnalyseCommand extends Command
 
 		$tmpFile = $input->getOption('tmp-file');
 		$insteadOfFile = $input->getOption('instead-of');
+		$errorFormat = $input->getOption('error-format');
 
 		if (
 			!is_array($paths)
@@ -180,6 +181,7 @@ final class AnalyseCommand extends Command
 			|| (!is_string($level) && $level !== null)
 			|| (!is_string($tmpFile) && $tmpFile !== null)
 			|| (!is_string($insteadOfFile) && $insteadOfFile !== null)
+			|| (!is_string($errorFormat) && $errorFormat !== null)
 			|| (!is_bool($allowXdebug))
 		) {
 			throw new ShouldNotHappenException();
@@ -202,6 +204,7 @@ final class AnalyseCommand extends Command
 				$insteadOfFile,
 				true,
 				deferBootstrapFiles: true,
+				errorFormat: $errorFormat,
 			);
 		} catch (InceptionNotSuccessfulException) {
 			return 1;
@@ -237,21 +240,12 @@ final class AnalyseCommand extends Command
 		}
 
 		$errorOutput = $inceptionResult->getErrorOutput();
-		$errorFormat = $input->getOption('error-format');
+		$container = $inceptionResult->getContainer();
 
-		if (!is_string($errorFormat) && $errorFormat !== null) {
-			throw new ShouldNotHappenException();
-		}
-
-		if ($errorFormat === null) {
-			$errorFormat = $inceptionResult->getContainer()->getParameter('errorFormat');
-		}
-
+		$errorFormat = $container->getParameter('errorFormat');
 		if ($errorFormat === null) {
 			$errorFormat = 'table';
 		}
-
-		$container = $inceptionResult->getContainer();
 		$errorFormatterServiceName = sprintf('errorFormatter.%s', $errorFormat);
 		if (!$container->hasService($errorFormatterServiceName)) {
 			$errorOutput->writeLineFormatted(sprintf(

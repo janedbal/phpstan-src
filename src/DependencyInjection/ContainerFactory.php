@@ -114,6 +114,7 @@ final class ContainerFactory
 		?string $singleReflectionFile = null,
 		?string $singleReflectionInsteadOfFile = null,
 		array $additionalParameters = [],
+		?string $errorFormat = null,
 	): Container
 	{
 		[$allConfigFiles, $projectConfig] = $this->detectDuplicateIncludedFiles(
@@ -152,12 +153,16 @@ final class ContainerFactory
 			'cliAutoloadFile' => $cliAutoloadFile,
 			'env' => Environment::getCleanedArray(),
 		], $additionalParameters));
-		$configurator->addDynamicParameters([
+		$dynamicParameters = [
 			'singleReflectionFile' => $singleReflectionFile,
 			'singleReflectionInsteadOfFile' => $singleReflectionInsteadOfFile,
 			'analysedPaths' => $analysedPaths,
 			'analysedPathsFromConfig' => $analysedPathsFromConfig,
-		]);
+		];
+		if ($errorFormat !== null) {
+			$dynamicParameters['errorFormat'] = $errorFormat;
+		}
+		$configurator->addDynamicParameters($dynamicParameters);
 		$configurator->addConfig($this->configDirectory . '/config.neon');
 		foreach ($additionalConfigFiles as $additionalConfigFile) {
 			$configurator->addConfig($additionalConfigFile);
