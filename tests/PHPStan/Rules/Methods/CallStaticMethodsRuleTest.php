@@ -945,6 +945,29 @@ class CallStaticMethodsRuleTest extends RuleTestCase
 		]);
 	}
 
+	public function testBug12118(): void
+	{
+		$this->checkThisOnly = false;
+		$this->analyse([__DIR__ . '/data/bug-12118.php'], [
+			[
+				'Static call to instance method Bug12118\Foo::instanceMethod().',
+				10,
+			],
+			[
+				'Static call to instance method Bug12118\Foo::instanceMethod().',
+				30,
+			],
+			[
+				'Static call to instance method Bug12118\Foo::instanceMethod().',
+				39,
+			],
+			[
+				'Static call to instance method Bug12118\Foo::instanceMethod().',
+				48,
+			],
+		]);
+	}
+
 	public function testBug12558(): void
 	{
 		$this->checkThisOnly = false;

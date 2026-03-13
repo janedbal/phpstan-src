@@ -270,6 +270,7 @@ final class StaticMethodCallCheck
 				!$function instanceof MethodReflection
 				|| $function->isStatic()
 				|| $scopeIsInMethodClassOrSubClass->no()
+				|| ($scope->isInAnonymousFunction() && !$scope->hasVariableType('this')->yes())
 			) {
 				// per php-src docs, this method can be called statically, even if declared non-static
 				if (strtolower($method->getName()) === 'loadhtml' && $method->getDeclaringClass()->getName() === DOMDocument::class) {
