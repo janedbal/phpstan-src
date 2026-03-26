@@ -6,6 +6,7 @@ use Nette\Bootstrap\Extensions\PhpExtension;
 use Nette\DI\Config\Adapters\PhpAdapter;
 use Nette\DI\Definitions\Statement;
 use Nette\DI\Helpers;
+use Nette\DI\InvalidConfigurationException;
 use Nette\Schema\Context as SchemaContext;
 use Nette\Schema\Elements\AnyOf;
 use Nette\Schema\Elements\Structure;
@@ -167,6 +168,7 @@ final class ContainerFactory
 
 		$container = $configurator->createContainer()->getByType(Container::class);
 		$this->validateParameters($container->getParameters(), $projectConfig['parametersSchema']);
+		$this->validateExceptionClasses($container->getByType(ReflectionProvider::class), $container->getParameters());
 		self::postInitializeContainer($container);
 
 		return $container;
@@ -385,6 +387,30 @@ final class ContainerFactory
 
 			if (array_key_exists('count', $ignoreError) && !array_key_exists('path', $ignoreError)) {
 				throw new InvalidIgnoredErrorException('An ignoreErrors entry with count field must also contain path field.');
+			}
+		}
+	}
+
+	/**
+	 * @param array<mixed> $parameters
+	 */
+	private function validateExceptionClasses(ReflectionProvider $reflectionProvider, array $parameters): void
+	{
+		if (
+			!array_key_exists('featureToggles', $parameters)
+			|| !is_array($parameters['featureToggles'])
+			|| !(bool) $parameters['featureToggles']['bleedingEdge']
+		) {
+			return;
+		}
+
+		foreach (['checkedExceptionClasses', 'uncheckedExceptionClasses'] as $parameterName) {
+			foreach ($parameters['exceptions'][$parameterName] ?? [] as $className) {
+				if ($reflectionProvider->hasClass($className)) {
+					continue;
+				}
+
+				throw new InvalidConfigurationException(sprintf('Class %s configured in exceptions.%s does not exist.', $className, $parameterName));
 			}
 		}
 	}
