@@ -13,7 +13,7 @@ class IncompatibleArrowFunctionDefaultParameterTypeRuleTest extends RuleTestCase
 
 	protected function getRule(): Rule
 	{
-		return new IncompatibleArrowFunctionDefaultParameterTypeRule();
+		return new IncompatibleArrowFunctionDefaultParameterTypeRule(new IncompatibleClosureLikeDefaultParameterTypeCheck());
 	}
 
 	public function testRule(): void

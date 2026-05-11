@@ -13,7 +13,7 @@ class IncompatibleClosureFunctionDefaultParameterTypeRuleTest extends RuleTestCa
 
 	protected function getRule(): Rule
 	{
-		return new IncompatibleClosureDefaultParameterTypeRule();
+		return new IncompatibleClosureDefaultParameterTypeRule(new IncompatibleClosureLikeDefaultParameterTypeCheck());
 	}
 
 	public function testRule(): void
