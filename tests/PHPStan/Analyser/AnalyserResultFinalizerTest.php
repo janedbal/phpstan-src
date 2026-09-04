@@ -3,6 +3,7 @@
 namespace PHPStan\Analyser;
 
 use PhpParser\Node;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\DependencyInjection\DirectExtensionsCollection;
 use PHPStan\Node\CollectedDataNode;
 use PHPStan\Rules\DirectRegistry as DirectRuleRegistry;
@@ -104,7 +105,7 @@ class AnalyserResultFinalizerTest extends PHPStanTestCase
 			linesToIgnore: [],
 			unmatchedLineIgnores: [],
 			internalErrors: [],
-			collectedData: [__FILE__ => [TraitDeclarationCollector::class => ['data']]],
+			collectedData: LazyCollectedData::fromArray([__FILE__ => [TraitDeclarationCollector::class => ['data']]]),
 			dependencies: null,
 			usedTraitDependencies: null,
 			valueDependencies: null,
