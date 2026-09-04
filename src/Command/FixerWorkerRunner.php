@@ -9,6 +9,7 @@ use PHPStan\Analyser\Error;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelperResult;
 use PHPStan\Analyser\InternalError;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Analyser\ResultCache\ResultCacheManager;
 use PHPStan\Analyser\ResultCache\ResultCacheManagerFactory;
 use PHPStan\DependencyInjection\AutowiredService;
@@ -343,7 +344,7 @@ final class FixerWorkerRunner
 				linesToIgnore: [],
 				unmatchedLineIgnores: [],
 				internalErrors: [],
-				collectedData: [],
+				collectedData: LazyCollectedData::fromArray([]),
 				dependencies: [],
 				usedTraitDependencies: [],
 				valueDependencies: ['values' => [], 'dependents' => []],

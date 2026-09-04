@@ -5,12 +5,10 @@ namespace PHPStan\Analyser\ResultCache;
 use PHPStan\Analyser\CollectedDataRuleResult;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyserResult;
-use PHPStan\Collectors\CollectedData;
 use PHPStan\Dependency\RootExportedNode;
 
 /**
  * @phpstan-import-type LinesToIgnore from FileAnalyserResult
- * @phpstan-import-type CollectorData from CollectedData
  */
 final class ResultCache
 {
@@ -22,7 +20,6 @@ final class ResultCache
 	 * @param array<string, list<Error>> $locallyIgnoredErrors
 	 * @param array<string, LinesToIgnore> $linesToIgnore
 	 * @param array<string, LinesToIgnore> $unmatchedLineIgnores
-	 * @param CollectorData $collectedData
 	 * @param array<string, array<string>> $dependencies
 	 * @param array<string, array<string>> $usedTraitDependencies
 	 * @param array<string, array{string, string, string, list<string>, list<string>}> $valueDependencies id => [extension class, key, current value, analysis dependents, declarations dependents] - see ValueDependencyCollector
@@ -43,7 +40,7 @@ final class ResultCache
 		private array $locallyIgnoredErrors,
 		private array $linesToIgnore,
 		private array $unmatchedLineIgnores,
-		private array $collectedData,
+		private LazyCollectedData $collectedData,
 		private array $dependencies,
 		private array $usedTraitDependencies,
 		private array $valueDependencies,
@@ -125,10 +122,7 @@ final class ResultCache
 		return $this->unmatchedLineIgnores;
 	}
 
-	/**
-	 * @return CollectorData
-	 */
-	public function getCollectedData(): array
+	public function getCollectedData(): LazyCollectedData
 	{
 		return $this->collectedData;
 	}

@@ -11,6 +11,7 @@ use PHPStan\Analyser\CollectedDataReuse\SecondCollector;
 use PHPStan\Analyser\CollectedDataReuse\ThrowingRule;
 use PHPStan\Analyser\CollectedDataReuse\TrackingRule;
 use PHPStan\Analyser\CollectedDataReuse\UnregisteredValueRule;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Analyser\ResultCache\ResultCacheValueExtension;
 use PHPStan\Collectors\CollectedData;
 use PHPStan\File\FileHelper;
@@ -327,7 +328,7 @@ class CollectedDataRuleReuseTest extends PHPStanTestCase
 			linesToIgnore: [],
 			unmatchedLineIgnores: [],
 			internalErrors: [],
-			collectedData: $collectedData,
+			collectedData: LazyCollectedData::fromArray($collectedData),
 			dependencies: [],
 			usedTraitDependencies: [],
 			valueDependencies: null,

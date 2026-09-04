@@ -8,6 +8,7 @@ use PHPStan\Analyser\AnalyserResultFinalizer;
 use PHPStan\Analyser\Error;
 use PHPStan\Analyser\FileAnalyserResult;
 use PHPStan\Analyser\Ignore\IgnoredErrorHelper;
+use PHPStan\Analyser\ResultCache\LazyCollectedData;
 use PHPStan\Analyser\ResultCache\ResultCacheManagerFactory;
 use PHPStan\Analyser\ValueDependencyCollector;
 use PHPStan\Collectors\CollectedData;
@@ -81,7 +82,7 @@ final class AnalyseApplication
 		if (count($ignoredErrorHelperResult->getErrors()) > 0) {
 			$notFileSpecificErrors = $ignoredErrorHelperResult->getErrors();
 			$internalErrors = [];
-			$collectedData = [];
+			$collectedData = LazyCollectedData::fromArray([]);
 			$savedResultCache = false;
 			$memoryUsageBytes = 0;
 			$workerCount = 0;
@@ -120,7 +121,7 @@ final class AnalyseApplication
 					linesToIgnore: $intermediateAnalyserResult->getLinesToIgnore(),
 					unmatchedLineIgnores: $intermediateAnalyserResult->getUnmatchedLineIgnores(),
 					internalErrors: $intermediateAnalyserResult->getInternalErrors(),
-					collectedData: $intermediateAnalyserResult->getCollectedData(),
+					collectedData: $intermediateAnalyserResult->getLazyCollectedData(),
 					dependencies: $intermediateAnalyserResult->getDependencies(),
 					usedTraitDependencies: $intermediateAnalyserResult->getUsedTraitDependencies(),
 					valueDependencies: $intermediateAnalyserResult->getValueDependencies(),
@@ -168,7 +169,7 @@ final class AnalyseApplication
 			$ignoredErrorHelperProcessedResult = $ignoredErrorHelperResult->process($errors, $onlyFiles, $files, $hasInternalErrors);
 			$fileSpecificErrors = $ignoredErrorHelperProcessedResult->getNotIgnoredErrors();
 			$notFileSpecificErrors = $ignoredErrorHelperProcessedResult->getOtherIgnoreMessages();
-			$collectedData = $analyserResult->getCollectedData();
+			$collectedData = $resultCacheResult->getSavedCollectedData() ?? $analyserResult->getLazyCollectedData();
 		}
 
 		return new AnalysisResult(
@@ -176,7 +177,7 @@ final class AnalyseApplication
 			$notFileSpecificErrors,
 			$internalErrors,
 			[],
-			$this->mapCollectedData($collectedData),
+			fn (): array => $this->mapCollectedData($collectedData->toArray()),
 			$defaultLevelUsed,
 			$projectConfigFile,
 			$savedResultCache,
@@ -240,7 +241,7 @@ final class AnalyseApplication
 				linesToIgnore: [],
 				unmatchedLineIgnores: [],
 				internalErrors: [],
-				collectedData: [],
+				collectedData: LazyCollectedData::fromArray([]),
 				dependencies: [],
 				usedTraitDependencies: [],
 				valueDependencies: ['values' => [], 'dependents' => []],
@@ -358,15 +359,6 @@ final class AnalyseApplication
 			return $analyserResult;
 		}
 
-		$newCollectedData = [];
-		foreach ($analyserResult->getCollectedData() as $file => $data) {
-			if ($file === $tmpFile) {
-				$file = $insteadOfFile;
-			}
-
-			$newCollectedData[$file] = $data;
-		}
-
 		$dependencies = null;
 		if ($analyserResult->getDependencies() !== null) {
 			$dependencies = $this->switchTmpFileInDependencies($analyserResult->getDependencies(), $insteadOfFile, $tmpFile);
@@ -401,7 +393,7 @@ final class AnalyseApplication
 			linesToIgnore: $this->switchTmpFileInLinesToIgnore($analyserResult->getLinesToIgnore(), $insteadOfFile, $tmpFile),
 			unmatchedLineIgnores: $this->switchTmpFileInLinesToIgnore($analyserResult->getUnmatchedLineIgnores(), $insteadOfFile, $tmpFile),
 			internalErrors: $analyserResult->getInternalErrors(),
-			collectedData: $newCollectedData,
+			collectedData: $analyserResult->getLazyCollectedData()->withRenamedFile($tmpFile, $insteadOfFile),
 			dependencies: $dependencies,
 			usedTraitDependencies: $usedTraitDependencies,
 			valueDependencies: $valueDependencies,
